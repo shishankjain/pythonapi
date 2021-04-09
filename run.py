@@ -2,9 +2,17 @@ import requests
 
 url="http://127.0.0.1:5000/"
 
-response =requests.put(url + "video/1", {"likes":10, "name":"Shishank", "views": 100000})
-print (response.json())
-input()
+data = [{"likes": 78, "name": "Joe", "views": 100000},
+{"likes": 78, "name": "How to make an api", "views": 100999},
+{"likes": 7800000000, "name": "SHISHANK JAIN", "views": 100000},]
 
-response =requests.get(url + "video/1")
+for i in range (len(data)):
+  response= requests.put(url + "video/" + str(i), data[i])
+  print (response.json())
+input()
+response =requests.delete (url + "video/0")
+print (response)
+
+input()
+response =requests.get(url + "video/6")
 print (response.json())
