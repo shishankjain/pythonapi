@@ -23,7 +23,16 @@ video_put_args= reqparse.RequestParser()
 video_put_args.add_argument("name", type=str, help="Enter the name of the video" , required=True)
 video_put_args.add_argument("views", type=int, help="Views on the video")
 video_put_args.add_argument("likes", type=int, help="Likes on the video")
-videos={}
+
+video_update_args= reqparse.RequestParser()
+video_update_args.add_argument("name", type=str, help="Enter the name of the video")
+video_update_args.add_argument("views", type=int, help="Views on the video")
+video_update_args.add_argument("likes", type=int, help="Likes on the video")
+
+
+
+
+#videos={}
 
 # def donotwork_if_video_id_doesnt_exist(video_id):
 #   if video_id not in videos:
@@ -46,6 +55,8 @@ class Video (Resource):
   def get (self,video_id):
     #donotwork_if_video_id_doesnt_exist(video_id)
     result = VideoModel.query.filter_by(id=video_id).first()
+    if not result:
+      abort(404, message="Could not find video with that id")
     return result
 
 
@@ -61,6 +72,29 @@ class Video (Resource):
     db.session.add (video)
     db.session.commit()
     return video, 201  #send any status code like 201 here
+  
+
+  @marshal_with(resource_fields)
+  def patch(self, video_id):  #function for updation
+    args=video_update_args.parse_args()
+    #check if the video exists or not
+    result = VideoModel.query.filter_by(id=video_id).first()
+    if not result:
+      abort(404, message="Could not find video with that id. could not update")
+    if args['name']:
+      result.name=args['name']
+    if args['views']:
+      result.views= args['views']
+    if args['likes']:
+      result.likes = args ['likes']
+
+    
+    db.session.commit()
+    
+
+    return result
+
+
 
 
   def delete (self, video_id):
